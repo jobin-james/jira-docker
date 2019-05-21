@@ -1,0 +1,32 @@
+version: '3'
+services:
+  jira-server:
+    build: .
+    container_name: jira-server
+    ports:
+      - 8080:8080
+    volumes:
+      - ./jira_home:/var/atlassian/jira
+    depends_on:
+      - mysql
+    networks:
+      - jira-network
+  mysql:
+    image: mysql:5.7
+    container_name: jiradb
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_DATABASE=jira-db"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./my.cnf:/etc/my.cnf
+      - ./jiradb:/var/lib/mysql
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_bin']
+    networks:
+      - jira-network
+volumes:
+  jiradb:
+  jira_home:
+networks:
+  jira-network:
